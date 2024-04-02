@@ -4,7 +4,7 @@ from pyngrok import ngrok
 import requests
 
 # Set the ngrok authentication token
-ngrok.set_auth_token("2cPw5QwrSvEFWsSvwXCSwqFXsRf_5s7zCyKP9RPgCvV5y8rbk")
+ngrok.set_auth_token("NGROK_AUTH")
 
 # Establish a tunnel to the local port 11434
 ngrok_tunnel = ngrok.connect(11434)
