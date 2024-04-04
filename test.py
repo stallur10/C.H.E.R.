@@ -5,7 +5,8 @@ import ollama
 
 # Initialize the recognizer
 r = sr.Recognizer()
-
+# ollama.pull("tinydolphin")
+text=""
 def record_text():
     # Loop in case of errors
     while True:
@@ -22,26 +23,29 @@ def record_text():
                 return MyText
 
         except sr.UnknownValueError as e:
-            print("Speech recognition could not understand audio: {0}".format(e))
-            return "hello"
+            
+            return ""
         except sr.RequestError as e:
-            print("Could not request results from Google Speech Recognition service: {0}".format(e))
-            return "hello"
+            
+            return ""
 def ollama_response(input_text):
-    response = ollama.chat(model='llama2', messages=[
+    
+    response = ollama.chat(model='tinydolphin', messages=[
         {
             'role': 'user',
             'content': input_text,
         },
     ])
     print(response['message']['content'])
-    return response
+    return 
 
 def output_text(text):
-    print("Ollama's Response:", text)
+    # print("Ollama's Response:", text)
     return
 
 while True:
     text = record_text()
-    response = ollama_response(text)
-    output_text(response)
+    if text!="":
+        response = ollama_response(text)
+    
+    # output_text(response)

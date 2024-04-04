@@ -1,4 +1,5 @@
 import speech_recognition as sr
+import ollama
 
 def transcribe_speech():
     # Initialize recognizer
@@ -22,13 +23,27 @@ def transcribe_speech():
         try:
             # Recognize speech using Google's speech recognition
             text = recognizer.recognize_google(audio)
-            print("You said: " + text)
+            return text
         except sr.UnknownValueError:
             # Error: recognizer could not understand the audio
-            print("Google Speech Recognition could not understand the audio.")
+            return None
         except sr.RequestError as e:
             # Error: could not request results from Google's speech recognition service
-            print(f"Could not request results from Google Speech Recognition service; {e}")
+            return None
+
+def ollama_response(input_text):
+    
+    response = ollama.chat(model='tinydolphin', messages=[
+        {
+            'role': 'user',
+            'content': input_text,
+        },
+    ])
+    return response['message']['content']
+    
 
 if __name__ == "__main__":
-    transcribe_speech()
+    text = transcribe_speech()
+    if text!="":
+        response = ollama_response(text)
+        print(response)
