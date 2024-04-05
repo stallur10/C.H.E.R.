@@ -30,7 +30,7 @@ def record_text():
             return ""
 def ollama_response(input_text):
     
-    response = ollama.chat(model='tinydolphin', messages=[
+    response = ollama.chat(model='dolphinphi', messages=[
         {
             'role': 'user',
             'content': input_text,

@@ -12,10 +12,8 @@ def transcribe_speech():
 
     # Use the default microphone as the audio source
     with sr.Microphone() as source:
-        print("Please wait. Calibrating microphone...")
         # Listen for a short period to calibrate the energy threshold for ambient noise levels
         recognizer.adjust_for_ambient_noise(source, duration=1)
-        print("Calibrated. Please speak.")
 
         # Capture the audio
         audio = recognizer.listen(source)
@@ -40,10 +38,24 @@ def ollama_response(input_text):
         },
     ])
     return response['message']['content']
-    
+
+def getFirstTwoWords(text):
+    print( text)
+    if text is None:
+        return ""  # or any other appropriate action
+    return ' '.join(text.strip().split()[:2])
+ 
 
 if __name__ == "__main__":
-    text = transcribe_speech()
-    if text!="":
-        response = ollama_response(text)
-        print(response)
+    while 1<2:
+
+        text = transcribe_speech()
+        if text:
+        # print(f"you said: {getFirstTwoWords(text).lower}")
+            # first_two = getFirstTwoWords(text).lower
+            # if first_two == "Okay google" or first_two == "hey google" :
+            # text_minus_first_two = text[len(first_two):].strip()
+            response = ollama_response(text)
+            print(" ")
+            print (f"You said: {text}")
+            print(response)
