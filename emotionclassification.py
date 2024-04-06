@@ -249,7 +249,7 @@ output_classes=7
 to `one_hot_encode` them
 """
 
-from tensorflow.keras.utils import to_categorical
+from keras.utils import to_categorical
 
 y_train=to_categorical(y_train,num_classes=7)
 
@@ -374,9 +374,9 @@ Efficient Net Mainly follow an approact to improve model accuracy using 3 things
 
 # !pip install efficientnet
 
-from tensorflow.keras.models import Model
-from tensorflow.keras.optimizers import Adam
-from tensorflow.keras.preprocessing.image import ImageDataGenerator
+from keras.models import Model
+from keras.optimizers import Adam
+from keras.preprocessing.image import ImageDataGenerator
 from efficientnet.tfkeras import EfficientNetB0
 
 """### Performing Data Augmentation"""
