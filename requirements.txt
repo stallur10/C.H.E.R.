@@ -1,2 +1,0 @@
-pyngrok==7.1.6
-Requests==2.31.0
