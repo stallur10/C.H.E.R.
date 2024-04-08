@@ -16,18 +16,14 @@ limit = 180
 
 # GET INFORMATION FROM FIRESTORE DATABASE
 
-# Initialize Firebase Admin SDK
 cred = credentials.Certificate('cher-19625-firebase-adminsdk-vjqfy-f28ded84c0.json')
 firebase_admin.initialize_app(cred)
-# Create a Firestore client
 db = firestore.client()
 # Reference to a Firestore collection
 doc_ref = db.collection('Users').document('User1')
-# Get all documents in the collection
 doc = doc_ref.get()
 if doc.exists:
     data = doc.to_dict()
-    # Recipient's phone number
     to_number = data.get('PhoneNumber')
     message = data.get("Message")
     percentage = float(data.get("Percent"))/100
@@ -39,22 +35,20 @@ else:
 # LOAD TRAINED MODEL
 
 model = load_model('emotionDetectingModel.h5')
-# Initialize label encoder
-# Update this list with your model's emotions in the order they were encoded
 labels = ['Anger', 'Disgust', 'Fear', 'Happy', 'Sad', 'Surprise', 'Neutral']
 le = LabelEncoder()
 le.fit(labels)
 
 
 
-# TWILIO CREDENTIALS
+# TWILIO CREDENTIALS *MAKE YOUR OWN ACCOUNT AND REPLACE FOLLOWING INFO* *I ONLY HAVE FREE TRIAL AND ITS ALMOST OUT -- I DEBUGGED TOO MUCH*
 
-account_sid = 'ACa231e013485be680cad080c458dda456'
-auth_token = '9f5bbff69758c9cc2d451244f840322b'
+account_sid = 'REPLACE'
+auth_token = 'REPLACE'
 # Initialize Twilio client
 client = Client(account_sid, auth_token)
-# Twilio phone number
-from_number = '18775066761'  
+# Twilio phone number 
+from_number = 'REPLACE'  
 
 
 # CAMERA CODE
@@ -75,7 +69,7 @@ emotion = " "
 startTime = time.time()
 try:
     while True:
-        # Capture frame-by-frame
+        # Capture frames
         ret, frame = cap.read()
         if not ret:
             print("Failed to grab frame")
@@ -100,7 +94,6 @@ try:
             sad_frame_counter += 1     
         print(f"Detected: {emotion}")
  
-        # Break
         if cv2.waitKey(30) and time.time() - startTime >= limit:
             break
 finally: 
@@ -110,17 +103,7 @@ finally:
 
 # Send Text to Adult
 if sentText == False and  sad_frame_counter/frame_counter > percentage:
-    # client.messages.create(from_=from_number, to=to_number, body=message)
+    client.messages.create(from_=from_number, to=to_number, body=message)
     print("Message sent successfully.")
     sentText = True
 
-# CREATE GRAPHS
-
-# plt.plot(lineGraphX_sad, lineGraphY_sad, marker='o')
-# # Add labels and title
-# plt.xlabel('Total Frame')
-# plt.ylabel('Sad Frames')
-# plt.title('Line Graph Example')
-# # plt.xticks(range(min(0), max(2000) + 100, 1))
-# # Display the graph
-# plt.show()

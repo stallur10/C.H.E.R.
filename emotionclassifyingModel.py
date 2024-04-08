@@ -28,14 +28,14 @@ def load_datasets(directory):
             print(filename,"Completed\n")
     return image_paths,labels
 
-#Converting Them Into Train Dataframe
+#Train 
 
 train=pd.DataFrame()
 train["image"], train["label"]=load_datasets(TRAIN_DIR)
 
 train.sample(4)
 
-#Converting Them Into Test Dataframe
+#Test 
 
 test=pd.DataFrame()
 test["image"], test["label"]=load_datasets(TEST_DIR)
@@ -60,13 +60,11 @@ plt.show()
 plt.figure(figsize=(25,25))
 files=train.iloc[0:25]
 for index,file,label in files.itertuples():
-#     print(index)
     plt.subplot(5,5,index+1)
     img=Image.open(file)
     plt.imshow(img,cmap="gray")
     plt.title(label)
     plt.axis("off")
-#     plt.show()
 
 def load_img_grayscale(path):
     img = Image.open(path)
@@ -121,7 +119,7 @@ y_test
 
 
 from keras.models import Sequential
-from keras.layers import Dense, Conv2D, Dropout, Flatten, MaxPooling2D,LSTM,AveragePooling2D
+from keras.layers import Dense, Conv2D, Dropout, Flatten, MaxPooling2D
 
 model = Sequential()
 
@@ -169,7 +167,7 @@ plt.plot(history.history["val_loss"],"r",label="val_loss")
 plt.title("Loss")
 plt.show()
 
-# Evaluation our model
+# Evaluating our model
 
 from sklearn.metrics import accuracy_score,precision_score,recall_score,f1_score
 
@@ -218,4 +216,4 @@ prediction_label = le.inverse_transform([pred.argmax()])[0]
 print("Predicted Output:", prediction_label)
 plt.imshow(X_test[image_index].reshape(48, 48), cmap='gray');
 
-tf.saved_model.save(model, 'C:\\Users\\shrey\\OneDrive\\Documents\\GitHub\\eve\\savedModel')
+
