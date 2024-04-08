@@ -1,11 +1,3 @@
-
-"""
-Data Preprocessing:
-* Facial landmarks were extracted from the images.
-* The images were then resized to 48x48 pixels.
-* Augmentation techniques were applied to the data. Augmentation can involve operations like rotation, scaling, flipping, etc., to artificially increase the size of the training dataset and improve the model's generalization.
-"""
-
 import pandas as pd
 import numpy as np
 import seaborn as sns
@@ -16,12 +8,9 @@ import random
 import warnings
 import seaborn as sns
 
-
-
 warnings.filterwarnings("ignore")
 
 print(tf.__version__)
-
 
 TRAIN_DIR="train"
 TEST_DIR="test"
@@ -39,14 +28,14 @@ def load_datasets(directory):
             print(filename,"Completed\n")
     return image_paths,labels
 
-"""### Converting Them Into Train Dataframe"""
+#Converting Them Into Train Dataframe
 
 train=pd.DataFrame()
 train["image"], train["label"]=load_datasets(TRAIN_DIR)
 
 train.sample(4)
 
-"""### Converting Them Into Test Dataframe"""
+#Converting Them Into Test Dataframe
 
 test=pd.DataFrame()
 test["image"], test["label"]=load_datasets(TEST_DIR)
@@ -56,8 +45,6 @@ test.sample(4)
 train=train.sample(frac=1).reset_index(drop=True)
 
 train.head(4)
-
-"""### Basic `EDA`"""
 
 train["label"].value_counts().values
 
@@ -81,12 +68,10 @@ for index,file,label in files.itertuples():
     plt.axis("off")
 #     plt.show()
 
-
 def load_img_grayscale(path):
     img = Image.open(path)
     img = img.convert('L')
     return img
-
 
 def extract_feature_images(images):
     features = []
@@ -105,14 +90,10 @@ train_features[0][0][0]
 test_features=extract_feature_images(test["image"])
 test_features[0][0][0]
 
-
-
 X_train=train_features/255.0
 X_test=test_features/255.0
 
 X_train[0][0][0]
-
-
 
 from sklearn.preprocessing import LabelEncoder
 le=LabelEncoder()
@@ -127,10 +108,6 @@ y_test
 input_shape=(48,48,1)
 output_classes=7
 
-"""Converting all values into categorical column to help our `CNN Layers`
-to `one_hot_encode` them
-"""
-
 from keras.utils import to_categorical
 
 y_train=to_categorical(y_train,num_classes=7)
@@ -141,15 +118,12 @@ y_test=to_categorical(y_test,num_classes=7)
 
 y_test
 
-"""# Making Our Deep CNN Model
 
-"""
 
 from keras.models import Sequential
 from keras.layers import Dense, Conv2D, Dropout, Flatten, MaxPooling2D,LSTM,AveragePooling2D
 
 model = Sequential()
-
 
 model.add(Conv2D(32, kernel_size=(3, 3), activation='relu', input_shape=(48,48,1)))
 model.add(Conv2D(64, kernel_size=(3, 3), activation='relu'))
@@ -171,7 +145,7 @@ model.add(Dense(output_classes, activation="softmax"))
 
 model.compile(optimizer="adam", metrics=["accuracy"], loss="categorical_crossentropy")
 
-"""### Using `Early Stopping`"""
+#Using Early Stopping
 
 from keras.callbacks import EarlyStopping
 
@@ -181,23 +155,21 @@ early_stopping = EarlyStopping(monitor='val_loss',
 
 history=model.fit(x=X_train,y=y_train,batch_size=32,epochs=5,validation_data=(X_test,y_test),callbacks=[early_stopping])
 
-"""### Plotting the accuracy and val_accuracy graph"""
+# Plotting the accuracy and val_accuracy graph
 
 plt.plot(history.history["accuracy"],"b",label="accuracy")
 plt.plot(history.history["val_accuracy"],"r",label="val_accuracy")
 plt.title("Accuracy Score")
 plt.show()
 
-"""### Plotting the loss and val_loss graph"""
+# Plotting the loss and val_loss graph
 
 plt.plot(history.history["loss"],"b",label="loss")
 plt.plot(history.history["val_loss"],"r",label="val_loss")
 plt.title("Loss")
 plt.show()
 
-"""## Evaluation our model
-Using `Accuracy` `Precision` `Recall` `F1` and `hinge loss`
-"""
+# Evaluation our model
 
 from sklearn.metrics import accuracy_score,precision_score,recall_score,f1_score
 
@@ -222,7 +194,7 @@ from sklearn.metrics import hamming_loss
 hamming_loss_val = hamming_loss(y_test,preds_cat)
 print("Hamming Loss:", hamming_loss_val)
 
-len(X_test)
+len(X_test) 
 
 import random
 image_index=random.randint(0,len(X_test))
@@ -247,4 +219,3 @@ print("Predicted Output:", prediction_label)
 plt.imshow(X_test[image_index].reshape(48, 48), cmap='gray');
 
 tf.saved_model.save(model, 'C:\\Users\\shrey\\OneDrive\\Documents\\GitHub\\eve\\savedModel')
-
