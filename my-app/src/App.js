@@ -7,6 +7,8 @@ function App() {
   const [phoneNumber, setPhoneNumber] = useState("");
   const [percent, setPercent] = useState("");
   const [message, setMessage] = useState("");
+  const [timeLim, setTimeLim] = useState("");
+
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -17,12 +19,14 @@ function App() {
         Message: message,
         PhoneNumber: phoneNumber,
         Percent: percent,
+        TimeLimit: timeLim,
       });
       console.log("Document successfully written!");
 
       setPhoneNumber("");
       setPercent("");
       setMessage("");
+      setTimeLim("")
     } catch (e) {
       console.error("Error adding document: ", e);
     }
@@ -32,13 +36,13 @@ function App() {
     <div className="App">
       <div className="App-content">
         <header className="App-header">
-          <h1>C.H.E.R. Settings</h1>
+          <h1>CONFIGURE C.H.E.R. </h1>
         </header>
         <form onSubmit={handleSubmit}>
           <div className="Questions">
             <div>
               <label>
-                What is your phone number?
+                Phone Number
                 <input
                   type="text"
                   placeholder="Enter"
@@ -49,7 +53,7 @@ function App() {
             </div>
             <div>
               <label>
-                Send message at what percent?
+                Trigger Message at What Percent?
                 <input
                   type="text"
                   placeholder="Enter"
@@ -60,12 +64,23 @@ function App() {
             </div>
             <div>
               <label>
-                What message should be texted?
+                Message
                 <input
                   type="text"
                   placeholder="Enter"
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}
+                />
+              </label>
+            </div>
+            <div>
+              <label>
+                Session Length (Seconds)
+                <input
+                  type="text"
+                  placeholder="Enter"
+                  value={timeLim}
+                  onChange={(e) => setTimeLim(e.target.value)}
                 />
               </label>
             </div>
