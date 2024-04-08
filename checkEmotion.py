@@ -12,12 +12,14 @@ from firebase_admin import firestore
 
 
 percentage = .4
+limit = 180
 
-# Get information from firestore database
+# GET INFORMATION FROM FIRESTORE DATABASE
 
 # Initialize Firebase Admin SDK
 cred = credentials.Certificate('cher-19625-firebase-adminsdk-vjqfy-f28ded84c0.json')
 firebase_admin.initialize_app(cred)
+# Create a Firestore client
 db = firestore.client()
 # Reference to a Firestore collection
 doc_ref = db.collection('Users').document('User1')
@@ -28,19 +30,25 @@ if doc.exists:
     # Recipient's phone number
     to_number = data.get('PhoneNumber')
     message = data.get("Message")
-    percentage = data.get("Percent")/100
+    percentage = float(data.get("Percent"))/100
+    limit = float(data.get("TimeLimit"))
 else:
     print('Document does not exist')
 
 
-# Load trained model
+# LOAD TRAINED MODEL
 
 model = load_model('emotionDetectingModel.h5')
+# Initialize label encoder
+# Update this list with your model's emotions in the order they were encoded
 labels = ['Anger', 'Disgust', 'Fear', 'Happy', 'Sad', 'Surprise', 'Neutral']
 le = LabelEncoder()
 le.fit(labels)
 
-# Twilio credentials
+
+
+# TWILIO CREDENTIALS
+
 account_sid = 'ACa231e013485be680cad080c458dda456'
 auth_token = '9f5bbff69758c9cc2d451244f840322b'
 # Initialize Twilio client
@@ -49,10 +57,11 @@ client = Client(account_sid, auth_token)
 from_number = '18775066761'  
 
 
-# Camera code
+# CAMERA CODE
+
 # Open the camera
 cap = cv2.VideoCapture(0)
-time.sleep(2)
+time.sleep(1)
 # Frame counters
 frame_counter = 0
 sad_frame_counter = 0
@@ -63,6 +72,7 @@ lineGraphX_sad = []
 lineGraphY_sad = []
 sentText = False
 emotion = " "
+startTime = time.time()
 try:
     while True:
         # Capture frame-by-frame
@@ -70,57 +80,47 @@ try:
         if not ret:
             print("Failed to grab frame")
             break
-        frame_counter += 1  # Increment the frame counter
-        if frame_counter % 1 == 0:
-            # Convert frame to grayscale and resize
-            gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-            resized_frame = cv2.resize(gray, (48, 48), interpolation=cv2.INTER_AREA)
-            normalized_frame = resized_frame / 255.0
-            # Expand the frame dimensions to match the model's input shape: (1, 48, 48, 1)
-            input_frame = np.expand_dims(normalized_frame, axis=0)
-            input_frame = np.expand_dims(input_frame, axis=3)
-            # Predict the emotion
-            prediction = model.predict(input_frame)
-            emotion_index = np.argmax(prediction)
-            emotion = le.inverse_transform([emotion_index])[0]
-            # Keep track of frame data
-            if emotion == "Sad":
-                sad_frame_counter += 1
-            if emotion == "Happy":
-                happy_frame_counter += 1
-            if emotion == "Anger":
-                anger_frame_counter += 1
-            if emotion == "Neutral":
-                neutral_frame_counter += 1
-            if frame_counter == 100:
-                lineGraphX_sad.append(frame_counter)
-                lineGraphY_sad.append(sad_frame_counter)
-            # Send Text to Adult
-            if sentText == False and frame_counter > 200 and sad_frame_counter/frame_counter > .4:
-                # client.messages.create(from_=from_number, to=to_number, body=message)
-                print("Message sent successfully.")
-                sentText = True
-            print(f"Detected: {emotion}")
-        # Display the resulting frame with the predicted emotion (if any)
-        # if frame_counter % 1 == 0:
-        #     cv2.putText(frame, f'You are feeling: {emotion}', (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2)
+        frame_counter += 1  
+
+        # Preproccess Frame 
         cv2.imshow('Frame', frame)
-        # Break the loop when 'q' is pressed
-        if cv2.waitKey(1) & 0xFF == ord('q'):
+        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+        resized_frame = cv2.resize(gray, (48, 48), interpolation=cv2.INTER_AREA)
+        normalized_frame = resized_frame / 255.0
+        input_frame = np.expand_dims(normalized_frame, axis=0)
+        input_frame = np.expand_dims(input_frame, axis=3)
+
+        # Predict 
+        prediction = model.predict(input_frame)
+        emotion_index = np.argmax(prediction)
+        emotion = le.inverse_transform([emotion_index])[0]
+
+        # Keep track of frame data
+        if emotion == "Sad":
+            sad_frame_counter += 1     
+        print(f"Detected: {emotion}")
+ 
+        # Break
+        if cv2.waitKey(30) and time.time() - startTime >= limit:
             break
 finally: 
-    # When everything is done, release the capture
     cap.release()
     cv2.destroyAllWindows()
 
 
-# Creating graphs 
+# Send Text to Adult
+if sentText == False and  sad_frame_counter/frame_counter > percentage:
+    # client.messages.create(from_=from_number, to=to_number, body=message)
+    print("Message sent successfully.")
+    sentText = True
 
-plt.plot(lineGraphX_sad, lineGraphY_sad, marker='o')
-# Add labels and title
-plt.xlabel('Total Frame')
-plt.ylabel('Sad Frames')
-plt.title('Line Graph Example')
-# plt.xticks(range(min(0), max(2000) + 100, 1))
-# Display the graph
-plt.show()
+# CREATE GRAPHS
+
+# plt.plot(lineGraphX_sad, lineGraphY_sad, marker='o')
+# # Add labels and title
+# plt.xlabel('Total Frame')
+# plt.ylabel('Sad Frames')
+# plt.title('Line Graph Example')
+# # plt.xticks(range(min(0), max(2000) + 100, 1))
+# # Display the graph
+# plt.show()
