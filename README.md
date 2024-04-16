@@ -1,5 +1,4 @@
-# FremdHacks Hackathon 2024 - Shreyas Talluri, Sahil Khunt 
-#**FIRST PLACE WINNER**
+# FremdHacks Hackathon 2024 - Shreyas Talluri, Sahil Khunt (**FIRST PLACE WINNER**)
 C.H.E.R. - Comprehensive Human Emotion Recognition
 C.H.E.R. uses AI and computer vision to help parents and schools detect early signs of depression in teens, aiming to prevent suicide by notifying trusted adults so teens can get the help they need.
 
