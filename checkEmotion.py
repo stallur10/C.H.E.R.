@@ -17,7 +17,7 @@ limit = 180
 # GET INFORMATION FROM FIRESTORE DATABASE
 
 cred = credentials.Certificate('cher-19625-firebase-adminsdk-vjqfy-f28ded84c0.json')
-firebase_admin.initialize_app(cred)
+firebase_admin.initialize_app(cred)     
 db = firestore.client()
 # Reference to a Firestore collection
 doc_ref = db.collection('Users').document('User1')
@@ -57,7 +57,7 @@ from_number = 'REPLACE'
 cap = cv2.VideoCapture(0)
 time.sleep(1)
 # Frame counters
-frame_counter = 0
+frame_counter = 1
 sad_frame_counter = 0
 happy_frame_counter = 0
 anger_frame_counter = 0
